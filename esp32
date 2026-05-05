@@ -209,14 +209,14 @@ void loop() {
         break;
 
         case '6':
-          servo1.write(45);
+          servo1.write(20);
           break;
         case '7':
           servo1.write(0);
           break;
 
         case '8':
-          servo2.write(45);
+          servo2.write(20);
           break;
 
         case '9':
