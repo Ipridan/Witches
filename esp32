@@ -1,4 +1,3 @@
-весь код
 #include <ESP32Servo.h>
 
 #include <Adafruit_NeoPixel.h>
