@@ -72,8 +72,22 @@ byte* readAllNtagPages(int& returnedSize) {
   return dynamicBuffer;
 }
 String getColor() {
+  // 1. Пытаемся найти новую карту или "разбудить" уже лежащую в поле (WUPA)
+  byte bufferATQA[2];
+  byte bufferSize = sizeof(bufferATQA);
+  
+  // Вместо PICC_IsNewCardPresent используем WakeupA
+  MFRC522::StatusCode status = mfrc522.PICC_WakeupA(bufferATQA, &bufferSize);
+  
+  // Если не удалось разбудить и не удалось найти новую — выходим
+  if (status != MFRC522::STATUS_OK) {
+    if (!mfrc522.PICC_IsNewCardPresent()) {
+      return "error";
+    }
+  }
 
-  if (!mfrc522.PICC_IsNewCardPresent() || !mfrc522.PICC_ReadCardSerial()) {
+  // 2. Читаем серийный номер
+  if (!mfrc522.PICC_ReadCardSerial()) {
     return "error";
   }
 
@@ -108,12 +122,10 @@ String getColor() {
 
   free(tagData);
   mfrc522.PICC_HaltA();
-  delay(50); // Даем время на остановку
+  // Даем время на остановку
   
   // Сбрасываем состояние карты для следующего чтения
   mfrc522.PCD_StopCrypto1();
-  delay(100); // Небольшая задержка перед следующим чтением
-  mfrc522.PCD_Init();
   return decodedMessage;
 }
 
